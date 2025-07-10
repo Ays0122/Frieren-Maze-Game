@@ -3,6 +3,8 @@ import pygame
 import sys
 import math
 from examplemazes import get_user_input
+import numpy as np
+from rocklogic import moverock
 
 pygame.init()
 
@@ -78,6 +80,9 @@ clock = pygame.time.Clock()
 image_block = pygame.image.load('textures/wood_block.png')
 image_block = pygame.transform.scale(image_block, (CELL_SIZE, CELL_SIZE))
 
+image_rock = pygame.image.load('textures/rock.png')
+image_rock = pygame.transform.scale(image_rock, (CELL_SIZE, CELL_SIZE))
+
 image_patch = pygame.image.load('textures/wood_texture.png')
 image_patch = pygame.transform.scale(image_patch, (CELL_SIZE, CELL_SIZE))
 
@@ -110,6 +115,10 @@ def draw_maze(maze):
 
             elif maze[r][c]==0:
                 screen.blit(image_patch, (c * CELL_SIZE, r * CELL_SIZE))
+            
+            elif maze[r][c]==4:
+                screen.blit(image_patch, (c * CELL_SIZE, r * CELL_SIZE))
+                screen.blit(image_rock, (c * CELL_SIZE, r * CELL_SIZE))
 
 
 
@@ -147,6 +156,7 @@ pygame.display.set_caption('Frieren Maze Game')
 #initialize r and c for keyboard inputs
 r = c = 0 #As start = (0, 0)
 image_frieren = image_frieren_down
+blockMode = True
 
 #Game starts
 while run:
@@ -162,7 +172,7 @@ while run:
         #pygame.draw.rect(screen, ORANGE, ((e_c) * CELL_SIZE, (e_r) * CELL_SIZE, CELL_SIZE, CELL_SIZE)) #End icon
         pygame.display.update()
         if event.type == pygame.QUIT:
-            #np.save("maze.npy", maze)
+            np.save("maze.npy", maze)
             sys.exit()
 
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -179,14 +189,21 @@ while run:
                 draw_shortest_path(maze)
                 pygame.display.update()
             if event.button==1: #left click
-                if start!=(r,c) and end != (r,c) and maze[r][c]==0:
+                if start!=(r,c) and end != (r,c) and maze[r][c]==0 and blockMode==True and maze[r][c]!=4:
                     maze[r][c]=1
                     screen.blit(image_block, (c * CELL_SIZE, r * CELL_SIZE))
                     pygame.display.update()
-                elif maze[r][c]==1:
+                    print("WOOD")
+                elif start!=(r,c) and end != (r,c) and maze[r][c]==0 and blockMode==False and maze[r][c]!=1:
+                    maze[r][c]=4
+                    screen.blit(image_rock, (c * CELL_SIZE, r * CELL_SIZE))
+                    pygame.display.update()
+                    print("ROCK")
+                elif maze[r][c]==1 or maze[r][c]==4:
                     maze[r][c]=0
                     screen.blit(image_patch, (c * CELL_SIZE, r * CELL_SIZE))
                     pygame.display.update()
+                    print("PATCH")
 
             if event.button==3:  #right click
                 if start_selection:
@@ -204,32 +221,50 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 image_frieren = image_frieren_side
-                if (c-1)<0 or maze[r][c-1] == 1:
+                if (c-1)<0 or maze[r][c-1] == 1 or (maze[r][c-1] == 4 and (maze[r][c-2] == 1 or maze[r][c-2] == 4)):
                     break
-                c = c - 1
+                elif (not (c-2)<0) and maze[r][c-1] == 4:
+                    maze = moverock(maze,r,c, "left")
+                 
+                if maze[r][c-1]!=4:
+                    c = c - 1
                 start_position(r, c)
                 print(f"r={r} c={c}")
             if event.key == pygame.K_RIGHT:
                 image_frieren = pygame.transform.flip(image_frieren_side, True, False)
-                if (c+1)>24 or maze[r][c+1] == 1:
+                if (c+1)>24 or maze[r][c+1] == 1 or (maze[r][c+1] == 4 and (maze[r][c+2] == 1 or maze[r][c+2] == 4)):
                     break
-                c = c + 1
+                elif (not (c+2)>24) and maze[r][c+1] == 4:
+                    maze = moverock(maze,r,c, "right")
+                
+                if maze[r][c+1]!=4:
+                    c = c + 1
                 start_position(r, c)
                 print(f"r={r} c={c}")
             if event.key == pygame.K_UP:
                 image_frieren = image_frieren_back
                 if (r-1)<0 or maze[r-1][c] == 1:
                     break
-                r = r - 1
+                elif (not (r-2)<0) and maze[r-1][c] == 4:
+                    maze = moverock(maze,r,c, "up")
+                
+                if maze[r-1][c]!=4:
+                    r = r - 1
                 start_position(r, c)
                 print(f"r={r} c={c}")
             if event.key == pygame.K_DOWN:
                 image_frieren = image_frieren_down
                 if (r+1)>24 or maze[r+1][c] == 1:
                     break
-                r = r + 1
+                elif (not (r+2)>24) and maze[r+1][c] == 4:
+                    maze = moverock(maze,r,c, "down")
+                
+                if maze[r+1][c]!=4:
+                    r = r + 1
                 start_position(r, c)
                 print(f"r={r} c={c}")
+            if event.key == pygame.K_RSHIFT:
+                blockMode = not blockMode
             pygame.display.update()
 
         if start == end:
