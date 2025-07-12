@@ -9,7 +9,7 @@ pygame.display.set_caption('Options')
 maze0=np.zeros((25,25))
 maze1=np.load("maze1.npy")
 maze2=np.load("maze2.npy")
-maze3=np.load("maze2.npy")
+maze3=np.load("maze3.npy")
 def get_user_input():
     # Graphical stuffs
     RED = (255, 0, 0)

@@ -12,6 +12,7 @@ pygame.init()
 
 maze=get_user_input()
 
+
 start = (0, 0)  # Top-left corner
 end = (24, 24)    # Bottom-right corner
 
@@ -60,6 +61,7 @@ def maze_solver(maze, start, end):
 
     return 0
 
+    
 #Graphical stuffs
 RED = (255, 0, 0)
 #WHITE = (255,255,255)
@@ -265,6 +267,8 @@ while run:
                 print(f"r={r} c={c}")
             if event.key == pygame.K_RSHIFT:
                 blockMode = not blockMode
+            if event.key == pygame.K_r:
+                pass
             pygame.display.update()
 
         if start == end:
