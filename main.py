@@ -278,7 +278,6 @@ while run:
             run = False
 
 
-#print(maze)
 
 
 
