@@ -1,18 +1,23 @@
-from collections import deque
-import pygame
 import sys
 import math
-from examplemazes import get_user_input
+import pygame
 import numpy as np
+from collections import deque
 from rocklogic import moverock
+from my_menu import get_user_input
 
 pygame.init()
 
 # Maze (0 = open path, 1 = wall)
 
-maze=get_user_input()
+maze = get_user_input()
 
+print(f"Game Started ")
 
+if maze is None:
+    print("No maze was selected. Exiting...")
+    sys.exit()
+    
 start = (0, 0)  # Top-left corner
 end = (24, 24)    # Bottom-right corner
 
@@ -64,14 +69,8 @@ def maze_solver(maze, start, end):
     
 #Graphical stuffs
 RED = (255, 0, 0)
-#WHITE = (255,255,255)
-#BLACK = (0 ,0, 0)
-BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
-#LIGHT_PURPLE = (209, 129, 249)
-ORANGE = (255, 165, 0)
 text_font = pygame.font.SysFont("Arial", 30, bold=True)
-#CELL_SIZE = 20
 CELL_SIZE = 30
 width = height = CELL_SIZE*len(maze)
 size = (width, height)
@@ -168,10 +167,9 @@ while run:
         (s_r, s_c) = start
         (e_r, e_c) = end
 
-        screen.blit(image_frieren, (s_c * CELL_SIZE, s_r * CELL_SIZE))
-        #pygame.draw.rect(screen, BLUE, (s_c * CELL_SIZE, s_r * CELL_SIZE, CELL_SIZE, CELL_SIZE)) #Start icon
-        screen.blit(image_chest, (e_c * CELL_SIZE, e_r * CELL_SIZE))
-        #pygame.draw.rect(screen, ORANGE, ((e_c) * CELL_SIZE, (e_r) * CELL_SIZE, CELL_SIZE, CELL_SIZE)) #End icon
+        screen.blit(image_frieren, (s_c * CELL_SIZE, s_r * CELL_SIZE)) # Start Icon
+        screen.blit(image_chest, (e_c * CELL_SIZE, e_r * CELL_SIZE)) # End Icon
+
         pygame.display.update()
         if event.type == pygame.QUIT:
             np.save("maze.npy", maze)
@@ -234,7 +232,7 @@ while run:
                 print(f"r={r} c={c}")
             if event.key == pygame.K_RIGHT:
                 image_frieren = pygame.transform.flip(image_frieren_side, True, False)
-                if (c+1)>24 or maze[r][c+1] == 1 or (maze[r][c+1] == 4 and (maze[r][c+2] == 1 or maze[r][c+2] == 4)):
+                if (c+1)>24 or maze[r][c+1] == 1 or (maze[r][c+1] == 4 and ((c+2)>24 or maze[r][c+2] == 1 or maze[r][c+2] == 4)):
                     break
                 elif (not (c+2)>24) and maze[r][c+1] == 4:
                     maze = moverock(maze,r,c, "right")
@@ -276,9 +274,3 @@ while run:
             pygame.display.update()
             draw_text("CONGRATS!!!!!", text_font, GREEN)
             run = False
-
-
-
-
-
-
