@@ -1,7 +1,7 @@
 import sys
 import math
-import pygame
-import numpy as np
+import pygame # type: ignore
+import numpy as np # type: ignore
 from collections import deque
 from rocklogic import moverock
 from my_menu import get_user_input
@@ -12,7 +12,7 @@ pygame.init()
 
 maze = get_user_input()
 
-print(f"Game Started ")
+print("Game Started ")
 
 if maze is None:
     print("No maze was selected. Exiting...")

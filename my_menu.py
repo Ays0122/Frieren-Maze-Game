@@ -1,4 +1,4 @@
-# examplemazes.py
+
 import pygame
 import numpy as np
 import sys
